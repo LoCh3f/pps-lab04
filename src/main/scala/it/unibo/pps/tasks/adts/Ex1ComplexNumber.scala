@@ -6,10 +6,12 @@ package it.unibo.pps.tasks.adts
  */
 
 object Ex1ComplexNumbers:
-
+  private enum ComplexNumber:
+    case Cons(re: Double, im: Double)
+    case Empty
   trait ComplexADT:
     type Complex
-    def complex(re: Double, im: Double): Complex
+    def complexNumber(re: Double, im: Double): Complex
     extension (complex: Complex)
       def re(): Double
       def im(): Double
@@ -18,13 +20,21 @@ object Ex1ComplexNumbers:
       def asString(): String
 
   object BasicComplexADT extends ComplexADT:
-
+    case class ComplexNumber[E, A](re: E, im: A)
     // Change assignment below: should probably define a case class and use it?
-    type Complex = Nothing 
-    def complex(re: Double, im: Double): Complex = ???
+    type Complex = ComplexNumber[Double, Double]
+    def complexNumber(re: Double, im: Double): Complex = ComplexNumber(re,im)
     extension (complex: Complex)
-      def re(): Double = ???
-      def im(): Double = ???
-      def sum(other: Complex): Complex = ???
-      def subtract(other: Complex): Complex = ???
-      def asString(): String = ???
+      def re(): Double = (re,im) match
+        case (re,_) => re
+      def im(): Double = (re,im) match
+        case (_,im) => im
+
+      def sum(other: Complex): Complex = complexNumber(complex.re + other.re, complex.im + other.im)
+      def subtract(other: Complex): Complex = complexNumber(complex.re - other.re, complex.im - other.im)
+      def asString(): String = (re,im) match
+        case (0,0) => "0.0"
+        case (0,im) if im != 0 => s"${im}i"
+        case (re,0) if re != 0 => s"${re}"
+        case (re,im) if im < 0 => s"${re} - ${im*(-1)}i"
+        case (re,im) => s"${re} + ${im}i"
