@@ -117,12 +117,12 @@ object SchoolModel:
   object BasicSchoolModule extends SchoolModule:
     case class SchoolImpl(courses: Sequence[Course], teachers: Sequence[Teacher], teacherToCourses: Sequence[(teacher: Teacher, course: Course)])
     override type School = SchoolImpl
-    override type Teacher = Optional[String]
-    override type Course = Optional[String]
+    override type Teacher = String
+    override type Course = String
 
-    def teacher(name: String): Teacher = Optional.Just(name)
+    def teacher(name: String): Teacher = name
     
-    def course(name: String): Course = Optional.Just(name)
+    def course(name: String): Course = name
     def emptySchool: School = SchoolImpl(Nil(), Nil(), Nil())
 
     extension (school: School)
@@ -140,8 +140,8 @@ object SchoolModel:
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] = school match {
         case SchoolImpl(_,_,teacherToCourses) => teacherToCourses.filter((t,c) => t == teacher).map((t,c) => c)
       }
-      def hasTeacher(name: String): Boolean = school.teachers.filter(t => t.==(Optional.Just(name))).==(Cons(Optional.Just(name),Nil()))
-      def hasCourse(name: String): Boolean = school.courses.filter(c => c.==(Optional.Just(name))).==(Cons(Optional.Just(name),Nil()))
+      def hasTeacher(name: String): Boolean = school.teachers.filter(t => t.==(name)).==(Cons(name,Nil()))
+      def hasCourse(name: String): Boolean = school.courses.filter(c => c.==(name)).==(Cons(name,Nil()))
 @main def examples(): Unit =
   import SchoolModel.BasicSchoolModule.*
   val school = emptySchool
